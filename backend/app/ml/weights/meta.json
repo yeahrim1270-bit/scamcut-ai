@@ -1,0 +1,191 @@
+{
+  "labels": [
+    "ask_transfer",
+    "ask_otp",
+    "ask_card_info",
+    "ask_personal_info",
+    "ask_link",
+    "ask_app_install",
+    "ask_cash_gift",
+    "urgency",
+    "threat",
+    "secrecy",
+    "imp_authority",
+    "imp_finance",
+    "imp_courier",
+    "imp_family",
+    "imp_service",
+    "topic_delivery",
+    "topic_legal",
+    "topic_payment",
+    "topic_money",
+    "topic_family_emergency",
+    "topic_account",
+    "benign"
+  ],
+  "encoder": "intfloat/multilingual-e5-small",
+  "n_train": 766,
+  "cv": {
+    "folds": 5,
+    "seed": 7,
+    "l2": 30.0,
+    "macro_f1": 0.762
+  },
+  "per_label": {
+    "ask_transfer": {
+      "threshold": 0.55,
+      "precision": 0.904,
+      "recall": 0.857,
+      "f1": 0.88,
+      "support": 77
+    },
+    "ask_otp": {
+      "threshold": 0.65,
+      "precision": 0.962,
+      "recall": 0.806,
+      "f1": 0.877,
+      "support": 31
+    },
+    "ask_card_info": {
+      "threshold": 0.4,
+      "precision": 0.808,
+      "recall": 0.955,
+      "f1": 0.875,
+      "support": 22
+    },
+    "ask_personal_info": {
+      "threshold": 0.45,
+      "precision": 0.769,
+      "recall": 0.857,
+      "f1": 0.811,
+      "support": 35
+    },
+    "ask_link": {
+      "threshold": 0.5,
+      "precision": 0.935,
+      "recall": 0.967,
+      "f1": 0.951,
+      "support": 60
+    },
+    "ask_app_install": {
+      "threshold": 0.35,
+      "precision": 0.829,
+      "recall": 0.971,
+      "f1": 0.895,
+      "support": 35
+    },
+    "ask_cash_gift": {
+      "threshold": 0.3,
+      "precision": 0.824,
+      "recall": 0.778,
+      "f1": 0.8,
+      "support": 18
+    },
+    "urgency": {
+      "threshold": 0.35,
+      "precision": 0.745,
+      "recall": 0.804,
+      "f1": 0.774,
+      "support": 51
+    },
+    "threat": {
+      "threshold": 0.45,
+      "precision": 0.636,
+      "recall": 0.483,
+      "f1": 0.549,
+      "support": 29
+    },
+    "secrecy": {
+      "threshold": 0.3,
+      "precision": 0.783,
+      "recall": 0.818,
+      "f1": 0.8,
+      "support": 22
+    },
+    "imp_authority": {
+      "threshold": 0.5,
+      "precision": 0.806,
+      "recall": 0.735,
+      "f1": 0.769,
+      "support": 34
+    },
+    "imp_finance": {
+      "threshold": 0.5,
+      "precision": 0.7,
+      "recall": 0.618,
+      "f1": 0.656,
+      "support": 34
+    },
+    "imp_courier": {
+      "threshold": 0.45,
+      "precision": 0.714,
+      "recall": 0.833,
+      "f1": 0.769,
+      "support": 24
+    },
+    "imp_family": {
+      "threshold": 0.45,
+      "precision": 0.759,
+      "recall": 0.786,
+      "f1": 0.772,
+      "support": 28
+    },
+    "imp_service": {
+      "threshold": 0.3,
+      "precision": 0.609,
+      "recall": 0.538,
+      "f1": 0.571,
+      "support": 26
+    },
+    "topic_delivery": {
+      "threshold": 0.6,
+      "precision": 0.868,
+      "recall": 0.904,
+      "f1": 0.886,
+      "support": 73
+    },
+    "topic_legal": {
+      "threshold": 0.45,
+      "precision": 0.872,
+      "recall": 0.756,
+      "f1": 0.81,
+      "support": 45
+    },
+    "topic_payment": {
+      "threshold": 0.3,
+      "precision": 0.613,
+      "recall": 0.745,
+      "f1": 0.673,
+      "support": 51
+    },
+    "topic_money": {
+      "threshold": 0.5,
+      "precision": 0.771,
+      "recall": 0.675,
+      "f1": 0.72,
+      "support": 40
+    },
+    "topic_family_emergency": {
+      "threshold": 0.4,
+      "precision": 0.63,
+      "recall": 0.68,
+      "f1": 0.654,
+      "support": 25
+    },
+    "topic_account": {
+      "threshold": 0.5,
+      "precision": 0.6,
+      "recall": 0.447,
+      "f1": 0.512,
+      "support": 47
+    },
+    "benign": {
+      "threshold": 0.5,
+      "precision": 0.736,
+      "recall": 0.789,
+      "f1": 0.762,
+      "support": 223
+    }
+  },
+  "trained_at": "2026-11-05T10:16:50Z"
+}

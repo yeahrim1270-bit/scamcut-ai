@@ -1,0 +1,30 @@
+{
+  "name": "scamcut-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test:rules": "tsx scripts/test-rules.ts",
+    "dev:api": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/py.ps1 -m uvicorn app.main:app --reload --port 8000 --app-dir backend",
+    "test:api": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/py.ps1 -m pytest backend -q",
+    "setup:api": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-backend.ps1",
+    "setup:model": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/py.ps1 -m app.ml.download",
+    "train:model": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/py.ps1 -m app.ml.train"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.5.0",
+    "next": "^15.5.29",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

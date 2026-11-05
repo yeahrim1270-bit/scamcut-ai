@@ -1,0 +1,167 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { buildFlow } from "@/lib/flow";
+import { maskItems } from "@/lib/privacy";
+import { analyzeItem } from "@/lib/rules";
+import { SAMPLE_SETS } from "@/lib/samples";
+import type { AiItem, AiResponse, EvidenceItem, ItemRuleResult } from "@/lib/types";
+import FlowView from "./components/FlowView";
+import GuardView from "./components/GuardView";
+import ScanView from "./components/ScanView";
+import VerifyView from "./components/VerifyView";
+
+type Tab = "scan" | "flow" | "guard" | "verify";
+const STORE_KEY = "scamcut.items.v1";
+
+function renumber(items: Omit<EvidenceItem, "id">[]): EvidenceItem[] {
+  return items.map((it, i) => ({ ...it, id: `E${i + 1}` }));
+}
+
+export default function Home() {
+  const [tab, setTab] = useState<Tab>("scan");
+  const [items, setItems] = useState<EvidenceItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [aiAvailable, setAiAvailable] = useState<boolean | null>(null);
+  const [aiResp, setAiResp] = useState<AiResponse | null>(null);
+  const [aiKey, setAiKey] = useState<string>(""); // AI 결과가 어떤 입력에 대한 것인지
+  const [aiLoading, setAiLoading] = useState(false);
+  const [showMask, setShowMask] = useState(false);
+
+  // 기기 내 저장소에서만 불러오기 (서버 저장 없음)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) setItems(JSON.parse(raw));
+    } catch {}
+    setLoaded(true);
+    fetch("/api/analyze")
+      .then((r) => r.json())
+      .then((d) => setAiAvailable(!!d.aiAvailable))
+      .catch(() => setAiAvailable(false));
+  }, []);
+  useEffect(() => {
+    if (loaded) localStorage.setItem(STORE_KEY, JSON.stringify(items));
+  }, [items, loaded]);
+
+  // 규칙 기반 분석 — 입력이 바뀔 때마다 즉시 재계산
+  const rules = useMemo(() => new Map<string, ItemRuleResult>(items.map((it) => [it.id, analyzeItem(it)])), [items]);
+  const flow = useMemo(() => buildFlow(items, rules), [items, rules]);
+  const masked = useMemo(() => maskItems(items), [items]);
+
+  const inputKey = JSON.stringify(items);
+  const aiResult = aiResp?.ok && aiKey === inputKey ? aiResp.result ?? null : null;
+  const aiStale = !!aiResp?.ok && aiKey !== inputKey;
+  const aiItems = useMemo(() => (aiResult ? new Map<string, AiItem>(aiResult.items.map((i) => [i.id, i])) : null), [aiResult]);
+
+  const add = (it: Omit<EvidenceItem, "id">) => setItems((prev) => renumber([...prev, it]));
+  const remove = (id: string) => setItems((prev) => renumber(prev.filter((x) => x.id !== id)));
+  const clear = () => {
+    if (confirm("입력한 모든 자료를 이 기기에서 삭제할까요?")) {
+      setItems([]);
+      setAiResp(null);
+    }
+  };
+  const loadSample = (i: number) => {
+    setItems(renumber(SAMPLE_SETS[i].items));
+    setAiResp(null);
+  };
+
+  const runAi = async () => {
+    if (!items.length) return;
+    setAiLoading(true);
+    const key = inputKey;
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: masked.masked }), // 마스킹된 자료만 전송
+      });
+      const data: AiResponse = await res.json();
+      setAiResp(data);
+      setAiKey(key);
+      if (data.ok && items.length >= 2) setTab("flow");
+    } catch {
+      setAiResp({ ok: false, error: "네트워크 오류로 AI 분석에 실패했습니다." });
+      setAiKey(key);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const maxRisk = Math.max(0, ...flow.incidents.map((i) => i.risk), ...[...rules.values()].map((r) => r.score));
+  const totalMasked = Object.values(masked.report).reduce((a, b) => a + b, 0);
+
+  return (
+    <div className="app">
+      <header className="header">
+        <div className="row between">
+          <div>
+            <div className="brand"><span className="logo">SCAM CUT</span> AI <span className="small muted" style={{ fontWeight: 400 }}>스캠컷</span></div>
+            <div className="slogan">사기의 흐름을 읽고, 피해의 연결을 끊다.</div>
+          </div>
+          <button className="btn ai sm" onClick={runAi} disabled={!items.length || aiLoading || aiAvailable === false}>
+            {aiLoading ? <><span className="spinner" /> 분석 중</> : "🤖 AI 사건 분석"}
+          </button>
+        </div>
+        <div className="status-row">
+          <span className="chip rule">📏 규칙 엔진: 실시간 동작</span>
+          {aiAvailable === null && <span className="chip">AI 상태 확인 중</span>}
+          {aiAvailable === true && <span className="chip ai">🤖 Claude 연결됨</span>}
+          {aiAvailable === false && <span className="chip warn">AI 키 미설정 · 규칙 기반만 동작</span>}
+          {aiResult && aiResp?.elapsedMs && <span className="chip ai">AI 분석 완료 {(aiResp.elapsedMs / 1000).toFixed(1)}s</span>}
+          {aiStale && <span className="chip warn">자료 변경됨 · AI 재분석 필요</span>}
+          {items.length > 0 && <span className="chip">최고 위험도 {maxRisk}</span>}
+        </div>
+        {aiResp && !aiResp.ok && aiKey === inputKey && <div className="small" style={{ color: "var(--danger)", marginTop: 6 }}>AI: {aiResp.error}</div>}
+      </header>
+
+      <main className="main">
+        {tab === "scan" && (
+          <>
+            <div className="notice" style={{ marginBottom: 12 }}>
+              🔒 자료는 이 기기(브라우저)에만 저장됩니다. AI 분석 시 전화번호·계좌·주민번호·카드번호·인증번호는 <b>기기에서 먼저 마스킹</b>된 후 전송되며, 서버에 저장되지 않습니다.
+              {items.length > 0 && (
+                <>
+                  {" "}<button className="btn sm" style={{ marginTop: 6 }} onClick={() => setShowMask(!showMask)}>
+                    {showMask ? "전송 미리보기 닫기" : `AI 전송 내용 미리보기 (마스킹 ${totalMasked}건)`}
+                  </button>
+                  {showMask && (
+                    <div style={{ marginTop: 8 }}>
+                      {masked.masked.map((m) => (
+                        <div key={m.id} className="quote" style={{ marginTop: 6 }}>
+                          <b>{m.id}</b> [{m.sender || "미상"}] {m.content}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <ScanView items={items} rules={rules} aiItems={aiItems} onAdd={add} onRemove={remove} onClear={clear} onLoadSample={loadSample} />
+          </>
+        )}
+        {tab === "flow" && <FlowView items={items} rules={rules} flow={flow} ai={aiResult} />}
+        {tab === "guard" && <GuardView items={items} rules={rules} flow={flow} ai={aiResult} />}
+        {tab === "verify" && <VerifyView rules={rules} flow={flow} ai={aiResult} />}
+      </main>
+
+      <nav className="tabs">
+        <div className="tabs-inner">
+          {([
+            ["scan", "🔍", "MULTI SCAN"],
+            ["flow", "🧬", "SCAM FLOW"],
+            ["guard", "🛡️", "ACTION GUARD"],
+            ["verify", "✅", "SAFE VERIFY"],
+          ] as [Tab, string, string][]).map(([t, ic, label]) => (
+            <button key={t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}>
+              <span className="ic">{ic}</span>
+              {label}
+              {t === "flow" && flow.incidents.length > 0 && <span className="dot">{flow.incidents.length}</span>}
+            </button>
+          ))}
+        </div>
+      </nav>
+    </div>
+  );
+}

@@ -1,0 +1,22 @@
+node_modules
+.next
+out
+.env
+.env*.local
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# backend (FastAPI)
+backend/.python/
+backend/.venv/
+backend/data/*.db
+backend/data/*.db-*
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/.env
+
+# AI 모델 파일(수백 MB) — npm run setup:model 로 내려받음
+backend/models/
+_shot*.png
