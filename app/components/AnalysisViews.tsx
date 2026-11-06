@@ -237,9 +237,9 @@ export function ActionGuardView({ data }: { data: ActionGuardData }) {
   );
 }
 
-/* ---------- 분석 결과 요약: 위험 징후 여부에 따라 스캔이가 달라집니다 ---------- */
+/* ---------- 분석 결과 요약: 위험 징후 여부에 따라 스캠이가 달라집니다 ---------- */
 
-// 위험·주의 → 경고하는 스캔이 / 위험 징후 없음 → 안심하는 스캔이
+// 위험·주의 → 경고하는 스캠이 / 위험 징후 없음 → 안심하는 스캠이
 export function ResultHero({ level, headline }: { level: Level; headline: string }) {
   const risky = level !== "low";
   return (
@@ -248,7 +248,7 @@ export function ResultHero({ level, headline }: { level: Level; headline: string
       <img
         className="result-mascot"
         src={risky ? "/images/scani-warning.png" : "/images/scani-safe.png"}
-        alt={risky ? "위험 징후를 알리는 스캔이" : "위험 징후가 없다고 알리는 스캔이"}
+        alt={risky ? "위험 징후를 알리는 스캠이" : "위험 징후가 없다고 알리는 스캠이"}
         width={240}
         height={240}
         draggable={false}

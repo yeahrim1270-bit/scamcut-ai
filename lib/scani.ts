@@ -1,4 +1,4 @@
-// 스캔이(안내 캐릭터)의 단계별 안내 문구.
+// 스캠이(안내 캐릭터)의 단계별 안내 문구.
 //
 // 단계는 '실제 데이터'에서만 결정됩니다.
 //  - analyzing : 분석이 실제로 진행 중일 때만 (analyzing 플래그를 넘겨받을 때)
@@ -38,7 +38,7 @@ export const SCANI_LINES: Record<Exclude<ScaniStage, "idle">, ScaniLine> = {
 
 export function idleLine(incidentCount: number, evidenceCount: number): ScaniLine {
   if (incidentCount === 0) {
-    return { title: "안녕하세요, 스캔이예요!", text: "먼저 사건을 만들고, 의심스러운 문자·전화·이메일 자료를 모아 보세요." };
+    return { title: "안녕하세요, 스캠이예요!", text: "먼저 사건을 만들고, 의심스러운 문자·전화·이메일 자료를 모아 보세요." };
   }
   if (evidenceCount === 0) {
     return { title: "자료를 등록해 볼까요?", text: "사건에 문자·전화·이메일 자료를 추가하면 시간 순서대로 정리해 드려요." };

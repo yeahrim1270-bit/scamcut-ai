@@ -191,7 +191,7 @@ textarea { min-height: 150px; resize: vertical; }
 .pick:hover { border-color: var(--primary); }
 @keyframes up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
 
-/* ---------- 스캔이(안내 캐릭터) ---------- */
+/* ---------- 스캠이(안내 캐릭터) ---------- */
 .hero-text { max-width: none; padding-right: 0; }
 .hero-text h2, .hero-text p { word-break: keep-all; }
 @media (max-width: 359px) { .hero-text h2 { font-size: 20px; } .feat { flex-direction: column; align-items: flex-start; gap: 8px; } }
@@ -316,7 +316,7 @@ textarea { min-height: 150px; resize: vertical; }
 .why p, .safe p { margin: 3px 0 0; line-height: 1.55; }
 .sec-body.rich { margin: 4px 0 0; white-space: normal; }
 
-/* 스캔이 '주의' 단계 */
+/* 스캠이 '주의' 단계 */
 .scani-msg.stage-caution { border-left-color: #f0a030; background: #fff9ee; }
 .scani-head.stage-caution .bubble { background: #fff1dc; } .scani-head.stage-caution .bubble::before { border-right-color: #fff1dc; }
 .inc-alert { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 700; border: 1.5px solid; }
@@ -355,7 +355,7 @@ textarea { min-height: 150px; resize: vertical; }
 @keyframes a-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { .analyzing-mascot { animation: none; } .a-bar i { transition: none; } }
 
-/* ---------- 분석 결과: 스캔이(경고/안심) ---------- */
+/* ---------- 분석 결과: 스캠이(경고/안심) ---------- */
 .result-hero { display: flex; flex-direction: column; align-items: center; margin-top: 12px; }
 .result-mascot { width: min(240px, 68%); height: auto; user-select: none; -webkit-user-drag: none; animation: a-float 2.8s ease-in-out infinite; }
 .result-hero .warn-banner { width: 100%; margin-top: 6px; }
@@ -405,7 +405,7 @@ details[open] > .acc-sum .acc-chev { transform: rotate(90deg); }
 .auth-switch { text-align: center; margin: 16px 0 0; font-size: 14px; color: var(--muted); }
 .auth-switch a { color: var(--primary); font-weight: 800; }
 
-/* 로그인·회원가입 상단: 스캔이 */
+/* 로그인·회원가입 상단: 스캠이 */
 .auth-head { text-align: center; }
 .auth-hero { width: 150px; height: 136px; margin: 2px auto 6px; }
 .auth-head .auth-title { margin: 0; }

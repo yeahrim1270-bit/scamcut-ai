@@ -37,7 +37,7 @@ export interface AnalysisRecord {
   title: string;
   summary: string;
   sections?: AnalysisSections;
-  // 분석 단계가 판정한 결과. 값이 있을 때만 스캔이가 '위험·주의·안전' 문구로 바뀝니다.
+  // 분석 단계가 판정한 결과. 값이 있을 때만 스캠이가 '위험·주의·안전' 문구로 바뀝니다.
   verdict?: "danger" | "caution" | "safe";
 }
 

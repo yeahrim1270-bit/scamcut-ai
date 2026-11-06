@@ -29,7 +29,7 @@ export function ScaniMessage({ stage, line, onClick }: { stage: ScaniStage; line
   );
   const cls = `scani-msg stage-${stage}`;
   return onClick ? (
-    <button className={cls} onClick={onClick} aria-label="스캔이 AI 도우미 열기">{body}</button>
+    <button className={cls} onClick={onClick} aria-label="스캠이 AI 도우미 열기">{body}</button>
   ) : (
     <div className={cls} role="status">{body}</div>
   );
@@ -153,7 +153,7 @@ export function ScaniGuideSheet({
   };
 
   return (
-    <Sheet title="스캔이 AI 도우미" onClose={onClose}>
+    <Sheet title="스캠이 AI 도우미" onClose={onClose}>
       <div className={`scani-head stage-${stage}`}>
         <ScaniAvatar size={64} />
         <div className="bubble">

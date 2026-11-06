@@ -36,7 +36,7 @@ class AnalysisContext:
 class AnalyzerOutput:
     summary: str  # 한 줄 요약
     detail: Optional[str] = None  # 해당 영역에 표시할 상세 내용
-    verdict: Optional[Literal["danger", "caution", "safe"]] = None  # 판정(있을 때만 스캔이 문구가 바뀜)
+    verdict: Optional[Literal["danger", "caution", "safe"]] = None  # 판정(있을 때만 스캠이 문구가 바뀜)
     data: Optional[dict[str, Any]] = None  # 다음 단계(SCAM FLOW 등)가 그대로 읽을 수 있는 구조화 결과
 
 

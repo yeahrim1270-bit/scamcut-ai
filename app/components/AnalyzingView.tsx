@@ -28,8 +28,8 @@ export default function AnalyzingView({ job, caps }: { job: AnalysisJob | undefi
   return (
     <div className="analyzing">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="analyzing-mascot" src="/images/scani-analyzing.png" alt="자료를 분석 중인 스캔이" width={260} height={233} draggable={false} />
-      <h2>스캔이가 자료를 분석하고 있어요!</h2>
+      <img className="analyzing-mascot" src="/images/scani-analyzing.png" alt="자료를 분석 중인 스캠이" width={260} height={233} draggable={false} />
+      <h2>스캠이가 자료를 분석하고 있어요!</h2>
       <p className="muted small">잠시만 기다려 주세요. 다른 화면으로 가도 분석은 계속돼요.</p>
 
       <div className="a-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>

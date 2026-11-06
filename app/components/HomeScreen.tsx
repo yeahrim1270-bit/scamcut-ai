@@ -23,7 +23,7 @@ export default function HomeScreen({ store, go }: { store: Store; go: (to: strin
   const [picking, setPicking] = useState(false);
   const [bell, setBell] = useState(false);
   const [guide, setGuide] = useState(false);
-  // 스캔이 단계는 저장된 분석 기록(verdict)에서만 결정됩니다. 분석이 연결되기 전에는 항상 'idle'.
+  // 스캠이 단계는 저장된 분석 기록(verdict)에서만 결정됩니다. 분석이 연결되기 전에는 항상 'idle'.
   // '분석 중' 문구는 서버에서 실제로 대기·진행 중인 분석 요청이 있을 때만 나타납니다.
   const analyzing = db.jobs.some(isActiveJob);
   const stage = deriveStage(db.analyses, analyzing);
@@ -46,8 +46,8 @@ export default function HomeScreen({ store, go }: { store: Store; go: (to: strin
           <span>AI 사기 분석 시작</span>
           <Icon name="chevron-right" size={20} />
         </button>
-        <button className="scani-btn" onClick={() => setGuide(true)} aria-label="스캔이 AI 도우미 열기">
-          <ScaniAvatar size={156} alt="스캔이 캐릭터" />
+        <button className="scani-btn" onClick={() => setGuide(true)} aria-label="스캠이 AI 도우미 열기">
+          <ScaniAvatar size={156} alt="스캠이 캐릭터" />
         </button>
       </section>
 
