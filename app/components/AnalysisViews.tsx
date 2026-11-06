@@ -267,3 +267,20 @@ export function ResultHero({ level, headline }: { level: Level; headline: string
     </div>
   );
 }
+
+// 분석 결과 맨 위 요약: 발견된 위험 행동과 가장 중요한 대응 방법만 보여 줍니다. (자세한 내용은 아래에서 펼쳐 보기)
+export function RiskSummary({ guard }: { guard: ActionGuardData }) {
+  const acts = guard.actions.filter((a) => a.severity !== "low");
+  if (!acts.length) return null;
+  return (
+    <div className="card sum-card">
+      <div className="grp-title" style={{ marginTop: 0 }}>발견된 위험 행동</div>
+      <div className="chips">
+        {acts.map((a) => (
+          <span key={a.action} className={`lvl ${SEV[a.severity].cls}`}>{a.name}</span>
+        ))}
+      </div>
+      <div className="safe"><b>이렇게 대응하세요</b><p>{acts[0].safe_response}</p></div>
+    </div>
+  );
+}

@@ -7,15 +7,13 @@ import { href } from "@/lib/route";
 import type { Store } from "@/lib/store";
 import AiFlowPanel from "./AiFlowPanel";
 import AnalyzingView from "./AnalyzingView";
-import { ActionGuardView, MultiScanView, ResultHero } from "./AnalysisViews";
+import { ActionGuardView, MultiScanView, ResultHero, RiskSummary } from "./AnalysisViews";
 import { Empty, IncidentCard, Notice, TabBar, TopBar, fmtDate, fmtDateTime } from "./common";
 import { Icon, type IconName } from "./icons";
 
 const SECTIONS: { api: AnalyzerKey; name: string; icon: IconName; desc: string }[] = [
-  { api: "multi_scan", name: "MULTI SCAN", icon: "search", desc: "사칭 대상·주제·URL·긴급성·요청 행동 추출" },
-  { api: "scam_flow", name: "SCAM FLOW", icon: "network", desc: "자료 간 연관성 및 사건 흐름" },
-  { api: "action_guard", name: "ACTION GUARD", icon: "shield-check", desc: "송금·인증번호·개인정보·의심 링크·앱 설치 요구 탐지" },
-  { api: "safe_verify", name: "SAFE VERIFY", icon: "bank", desc: "공식 경로 확인 및 안전 대응 안내" },
+  { api: "multi_scan", name: "MULTI SCAN", icon: "search", desc: "사칭 대상·주제·URL·긴급성·요청 행동" },
+  { api: "action_guard", name: "ACTION GUARD", icon: "shield-check", desc: "위험 행동 탐지와 안전한 대응" },
 ];
 
 const NOT_IMPLEMENTED = "ANALYZER_NOT_IMPLEMENTED";
@@ -102,7 +100,10 @@ export default function AnalysisScreen({
   const scan = stepData<MultiScanData>(latestJob, "multi_scan");
   const guard = stepData<ActionGuardData>(latestJob, "action_guard");
   const warnLevel: Level = guard?.level ?? scan?.overall.level ?? "low";
-  const warnHeadline = guard?.headline ?? "송금·인증번호·링크·앱 설치 요청이 있었는지 확인하고, 직접 찾은 공식 번호로 먼저 확인하세요.";
+  // 발견된 위험 행동은 바로 아래 요약 카드에 나오므로, 경고 상자에는 짧은 행동 지침만 둡니다(중복 방지).
+  const warnHeadline = guard && guard.actions.length > 0
+    ? "요구받은 행동을 지금은 따르지 말고, 직접 찾은 공식 번호로 먼저 확인하세요."
+    : "송금·인증번호·링크·앱 설치 요청이 있었는지 확인하고, 직접 찾은 공식 번호로 먼저 확인하세요.";
 
   const request = runAnalysis;
 
@@ -119,25 +120,16 @@ export default function AnalysisScreen({
     );
   }
 
+  const succeeded = latestJob?.status === "succeeded" && !!(scan || guard);
+  const rows = SECTIONS.filter((s) => s.api === "multi_scan" || s.api === "action_guard");
+
   return (
     <>
       <TopBar title="분석 결과" onBack={() => back(href.incident(incidentId))} />
       <main className="page">
         <IncidentCard title={incident.title} sub={`자료 ${items.length}개 | ${fmtDate(incident.createdAt)}`} />
 
-        {/* 요청 상태: 대기 · 분석 중 · 실패 · 성공 */}
-        {latestJob?.status === "pending" && (
-          <div className="status-box running">
-            <span className="spinner dark" />
-            <div className="grow"><b>분석 요청을 접수했어요</b><p>대기 중입니다. 곧 분석이 시작돼요.</p></div>
-          </div>
-        )}
-        {latestJob?.status === "running" && (
-          <div className="status-box running">
-            <span className="spinner dark" />
-            <div className="grow"><b>AI가 자료를 분석하고 있어요</b><p>등록된 자료 {items.length}개를 확인하고 있어요. 잠시만 기다려 주세요.</p></div>
-          </div>
-        )}
+        {/* 분석 전 · 실패 상태 */}
         {latestJob?.status === "failed" && (
           <div className="status-box failed">
             <Icon name="info" size={26} />
@@ -147,22 +139,6 @@ export default function AnalysisScreen({
                 {latestJob.errorMessage ?? "알 수 없는 오류가 발생했습니다."}
                 <br />
                 <span className="hint">{fmtDateTime(latestJob.createdAt)} 요청 · 실패한 분석의 결과는 만들어지지 않았어요.</span>
-              </p>
-            </div>
-          </div>
-        )}
-        {latestJob?.status === "succeeded" && latest && (
-          <div className="status-box done">
-            <Icon name="check-circle" size={26} />
-            <div className="grow">
-              <b>{latest.kind === "ai" ? "AI 분석 완료" : "분석 완료"}</b>
-              <p>
-                {latest.summary.split("\n")[0]}
-                <br />
-                <span className="hint">
-                  {fmtDateTime(latest.createdAt)}
-                  {records.length > 1 && <> · 이전 분석 {records.length - 1}건</>}
-                </span>
               </p>
             </div>
           </div>
@@ -182,21 +158,13 @@ export default function AnalysisScreen({
             <Icon name="shield-check" size={26} />
             <div className="grow">
               <b>분석을 요청할 수 있어요</b>
-              <p>등록된 자료 {items.length}개를 AI 모델과 규칙으로 분석해 위험 징후와 근거 문장을 보여 드려요.</p>
+              <p>등록된 자료 {items.length}개를 AI 모델과 규칙으로 분석해요.</p>
             </div>
           </div>
         )}
-
-        {/* 위험 징후 경고 (앱 화면) — 스캔이 캐릭터도 같은 결과에 따라 문구가 바뀝니다 */}
-        {latestJob?.status === "succeeded" && (scan || guard) && <ResultHero level={warnLevel} headline={warnHeadline} />}
-
-        {items.length > 0 && (
+        {items.length > 0 && !succeeded && (
           <button className="btn primary block lg" style={{ marginTop: 12 }} onClick={request} disabled={requesting || active || notReady.length > 0}>
-            {requesting || active ? (
-              <><span className="spinner" /> 분석 중…</>
-            ) : (
-              <><Icon name="shield-check" size={20} /> {latestJob ? "다시 분석 요청" : "분석 요청"}</>
-            )}
+            <Icon name="shield-check" size={20} /> {latestJob ? "다시 분석 요청" : "분석 요청"}
           </button>
         )}
         {notReady.length > 0 && (
@@ -205,37 +173,53 @@ export default function AnalysisScreen({
           </div>
         )}
 
-        <div className="card list-card" style={{ marginTop: 14 }}>
-          {SECTIONS.map((s) => {
-            const step = latestJob?.steps.find((st) => st.key === s.api);
-            const b = badge(step, caps.get(s.api));
-            const showScan = s.api === "multi_scan" && scan && !active;
-            const showGuard = s.api === "action_guard" && guard && !active;
-            return (
-              <section className="sec-row" key={s.api} aria-label={s.name}>
-                <div className="row">
-                  <span className="sec-ic"><Icon name={s.icon} size={22} /></span>
-                  <div className="grow">
-                    <b className="sec-name">{s.name}</b>
-                    <div className="sec-desc">{s.desc}</div>
-                  </div>
-                  <span className={`badge-state ${b.cls}`}>{b.text}</span>
-                </div>
-                {showScan && <MultiScanView data={scan} />}
-                {showGuard && <ActionGuardView data={guard} />}
-                {step?.status === "failed" && step.errorMessage && <div className="sec-note">{step.errorMessage}</div>}
-                {!step && caps.get(s.api) && !caps.get(s.api)!.implemented && <div className="sec-note">{caps.get(s.api)!.note}</div>}
-              </section>
-            );
-          })}
-        </div>
+        {/* 분석 결과: 위에는 핵심만, 자세한 내용은 눌러서 펼치기 */}
+        {succeeded && (
+          <>
+            <ResultHero level={warnLevel} headline={warnHeadline} />
+            {guard && <RiskSummary guard={guard} />}
+            {latest && (
+              <div className="meta-line">
+                AI 분석 완료 · {fmtDateTime(latest.createdAt)} · 자료 {items.length}개{records.length > 1 ? ` · 이전 분석 ${records.length - 1}건` : ""}
+              </div>
+            )}
+            <div className="acc-list">
+              {rows.map((s) => {
+                const step = latestJob?.steps.find((st) => st.key === s.api);
+                const b = badge(step, caps.get(s.api));
+                return (
+                  <details className="card acc" key={s.api}>
+                    <summary className="acc-sum">
+                      <span className="sec-ic"><Icon name={s.icon} size={22} /></span>
+                      <span className="grow">
+                        <b className="sec-name">{s.name}</b>
+                        <small>{s.desc}</small>
+                      </span>
+                      <span className={`badge-state ${b.cls}`}>{b.text}</span>
+                      <span className="acc-chev"><Icon name="chevron-right" size={18} /></span>
+                    </summary>
+                    <div className="acc-body">
+                      {s.api === "multi_scan" && scan && <MultiScanView data={scan} />}
+                      {s.api === "action_guard" && guard && <ActionGuardView data={guard} />}
+                      {step?.status === "failed" && step.errorMessage && <div className="sec-note" style={{ marginLeft: 0 }}>{step.errorMessage}</div>}
+                    </div>
+                  </details>
+                );
+              })}
+            </div>
+          </>
+        )}
 
         {items.length > 0 && <AiFlowPanel incidentId={incidentId} evidence={items} />}
 
         {notImplemented.length > 0 && (
-          <div style={{ marginTop: 14 }}>
-            <Notice>{notImplemented.map((c) => c.title).join(" · ")} 은(는) 다음 단계에서 연결됩니다. 지금은 MULTI SCAN과 ACTION GUARD만 실제로 분석해요.</Notice>
-          </div>
+          <p className="foot-note">{notImplemented.map((c) => c.title).join(" · ")} 은(는) 다음 단계에서 연결돼요.</p>
+        )}
+
+        {succeeded && items.length > 0 && (
+          <button className="btn outline block" style={{ marginTop: 6 }} onClick={request} disabled={requesting || active || notReady.length > 0}>
+            다시 분석하기
+          </button>
         )}
       </main>
       <TabBar active="history" />

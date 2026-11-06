@@ -29,6 +29,7 @@ export default function AiFlowPanel({ incidentId, evidence }: { incidentId: stri
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [consent, setConsent] = useState(false);
+  const [open, setOpen] = useState(false); // 기본은 접힌 상태, 해석이 끝나면 펼쳐서 보여 줌
 
   useEffect(() => {
     fetchAvailability().then(setAvail);
@@ -54,19 +55,26 @@ export default function AiFlowPanel({ incidentId, evidence }: { incidentId: stri
     const next: AiFlowRecord = { sig: prep.sig, at: new Date().toISOString(), model: r.model, result: r.result };
     saveCached(incidentId, next);
     setRec(next);
+    setOpen(true);
   };
 
   const maskedTotal = Object.values(prep.report).reduce((a, b) => a + b, 0);
   const x = rec?.result;
 
   return (
-    <div className="card ai-card" style={{ marginTop: 14 }}>
-      <div className="row between wrap">
-        <b>AI 사건 해석</b>
-        <span className="src src-ext">OpenAI {avail?.model ?? ""}</span>
-      </div>
-      <p className="small muted" style={{ margin: "6px 0 10px" }}>
-        외부 AI(OpenAI)가 자료 사이의 연결과 사건의 흐름을 해석해요. 위의 AI 모델·규칙 분석과는 별개의 결과예요.
+    <details className="card acc ai-card" open={open} onToggle={(e) => setOpen((e.currentTarget as HTMLDetailsElement).open)}>
+      <summary className="acc-sum">
+        <span className="sec-ic"><Icon name="network" size={22} /></span>
+        <span className="grow">
+          <b className="sec-name">AI 사건 해석</b>
+          <small>외부 AI(OpenAI)가 사건의 흐름을 해석</small>
+        </span>
+        <span className="src src-ext">OpenAI</span>
+        <span className="acc-chev"><Icon name="chevron-right" size={18} /></span>
+      </summary>
+      <div className="acc-body">
+      <p className="small muted" style={{ margin: "12px 0 10px" }}>
+        자료 사이의 연결과 사건의 흐름을 해석해요. 위의 AI 모델·규칙 분석과는 별개의 결과예요.{avail?.model ? ` (${avail.model})` : ""}
       </p>
 
       <button className="btn primary block" onClick={() => setConsent(true)} disabled={loading || avail?.available === false}>
@@ -160,6 +168,7 @@ export default function AiFlowPanel({ incidentId, evidence }: { incidentId: stri
           </div>
         </Sheet>
       )}
-    </div>
+      </div>
+    </details>
   );
 }
