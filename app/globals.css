@@ -200,7 +200,7 @@ textarea { min-height: 150px; resize: vertical; }
 /* 히어로 오른쪽 위 빈 공간에 크게 배치. 폭이 좁으면 글씨 쪽(왼쪽 ~232px)을 침범하지 않도록 줄어듭니다. */
 .scani-btn { position: absolute; z-index: 2; right: 10px; top: 14px; width: clamp(88px, calc(100% - 232px), 156px); aspect-ratio: 1; padding: 0; border: none; background: none; cursor: pointer; display: block; transition: transform .15s; }
 .scani-btn:active { transform: scale(.95); }
-.scani-img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+.scani-img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; transform: scaleX(-1); /* 좌우반전 */ }
 .scani-btn .scani-img { filter: drop-shadow(0 3px 5px rgba(10, 30, 90, .28)); }
 
 .scani-msg { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; margin-bottom: 14px; padding: 10px 12px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--primary); border-radius: 14px; cursor: pointer; color: var(--ink); }
@@ -334,3 +334,23 @@ textarea { min-height: 150px; resize: vertical; }
 .src-ext { background: #efeafd; color: #5a3fc0; }
 .ai-card { border-color: #d9cffa; }
 .ai-card .result-body { margin-top: 12px; }
+
+/* ---------- AI 분석 중 화면 ---------- */
+.analyzing { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px 8px 8px; }
+.analyzing-mascot { width: min(260px, 72%); height: auto; animation: a-float 2.4s ease-in-out infinite; user-select: none; -webkit-user-drag: none; }
+.analyzing h2 { margin: 14px 0 4px; font-size: 18px; font-weight: 800; }
+.analyzing p { margin: 0; }
+.a-bar { width: 100%; height: 10px; border-radius: 10px; background: var(--primary-100); margin: 22px 0 18px; overflow: hidden; }
+.a-bar i { display: block; height: 100%; border-radius: 10px; background: var(--primary); transition: width .5s ease; }
+.a-steps { list-style: none; margin: 0; padding: 0; width: 100%; text-align: left; }
+.a-step { display: flex; align-items: center; gap: 10px; padding: 10px 6px; font-size: 14.5px; border-bottom: 1px solid var(--line); }
+.a-step:last-child { border-bottom: none; }
+.a-ic { display: grid; place-items: center; width: 22px; flex: none; color: var(--call); }
+.a-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #c3cce0; }
+.a-name { font-weight: 800; }
+.a-desc { color: var(--muted); }
+.a-soon { margin-left: auto; font-size: 11.5px; font-weight: 700; color: var(--muted); background: #f0f3f9; border-radius: 8px; padding: 3px 8px; }
+.a-step.s-soon { opacity: .6; }
+.a-step.s-failed .a-ic { color: var(--danger); }
+@keyframes a-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .analyzing-mascot { animation: none; } .a-bar i { transition: none; } }

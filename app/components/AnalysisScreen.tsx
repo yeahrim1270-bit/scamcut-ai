@@ -6,6 +6,7 @@ import { isActiveJob, type AnalysisStep, type AnalyzerInfo, type AnalyzerKey } f
 import { href } from "@/lib/route";
 import type { Store } from "@/lib/store";
 import AiFlowPanel from "./AiFlowPanel";
+import AnalyzingView from "./AnalyzingView";
 import { ActionGuardView, MultiScanView, WarningBanner } from "./AnalysisViews";
 import { Empty, IncidentCard, Notice, TabBar, TopBar, fmtDate, fmtDateTime } from "./common";
 import { Icon, type IconName } from "./icons";
@@ -78,9 +79,26 @@ export default function AnalysisScreen({
 
   const request = async () => {
     setRequesting(true);
+    const t0 = Date.now();
     await store.requestAnalysis(incidentId);
+    // 분석이 순식간에 끝나도 '분석 중' 화면이 깜빡이듯 사라지지 않도록 최소 2.8초 유지(진행 표시는 실제 단계 상태)
+    const rest = 2800 - (Date.now() - t0);
+    if (rest > 0) await new Promise((r) => setTimeout(r, rest));
     setRequesting(false);
   };
+
+  // 분석 요청 직후~분석 진행 중에는 'AI 분석 중' 화면을 보여 줍니다.
+  if (requesting || active) {
+    return (
+      <>
+        <TopBar title="AI 분석 중" onBack={() => back(href.incident(incidentId))} />
+        <main className="page">
+          <AnalyzingView job={latestJob} caps={caps} />
+        </main>
+        <TabBar active="history" />
+      </>
+    );
+  }
 
   return (
     <>
