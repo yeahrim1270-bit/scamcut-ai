@@ -323,3 +323,9 @@ textarea { min-height: 150px; resize: vertical; }
 .inc-alert.danger { background: #fff4f4; border-color: #e46a6a; color: #8f1f1f; }
 .inc-alert.caution { background: #fff8ec; border-color: #f0b25a; color: #7a4600; }
 .inc-alert a { margin-left: auto; text-decoration: underline; white-space: nowrap; }
+
+/* ---------- 앱 실행(스플래시) 화면: 흰 배경 + 이름만 ---------- */
+.launch { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: #fff; animation: launch-in .5s ease-out; }
+.launch-name { margin: 0; padding-left: .26em; /* 글자 간격 때문에 생기는 오른쪽 쏠림 보정 */ font-size: clamp(24px, 8.2vw, 34px); font-weight: 800; letter-spacing: .26em; color: #1d1d1f; white-space: nowrap; }
+@keyframes launch-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .launch { animation: none; } }
