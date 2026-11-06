@@ -247,8 +247,8 @@ export function ResultHero({ level, headline }: { level: Level; headline: string
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="result-mascot"
-        src={risky ? "/images/scani-warning.png" : "/images/scani-safe.png"}
-        alt={risky ? "위험 징후를 알리는 스캠이" : "위험 징후가 없다고 알리는 스캠이"}
+        src={level === "high" ? "/images/scani-warning.png" : level === "caution" ? "/images/scani-caution.png" : "/images/scani-safe.png"}
+        alt={level === "high" ? "위험 징후를 알리는 스캠이" : level === "caution" ? "주의를 알리는 스캠이" : "위험 징후가 없다고 알리는 스캠이"}
         width={240}
         height={240}
         draggable={false}
