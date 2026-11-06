@@ -409,3 +409,4 @@ details[open] > .acc-sum .acc-chev { transform: rotate(90deg); }
 .auth-head { text-align: center; }
 .auth-hero { width: 150px; height: 136px; margin: 2px auto 6px; }
 .auth-head .auth-title { margin: 0; }
+.auth-mascot { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; }

@@ -61,7 +61,15 @@ export default function AuthScreen({ mode, store, go, back }: { mode: "login" | 
       <TopBar title={signup ? "회원가입" : "로그인"} onBack={() => back(href.me)} />
       <main className="page">
         <div className="auth-head">
-          <div className="auth-hero"><ScaniAvatar size={150} alt="스캠이 캐릭터" /></div>
+          <div className="auth-hero">
+            {signup ? (
+              <ScaniAvatar size={150} alt="스캠이 캐릭터" />
+            ) : (
+              // 로그인 화면 전용 캐릭터(반갑게 인사하는 스캠이)
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="auth-mascot" src="/images/scani-welcome.png" alt="스캠이 캐릭터" width={150} height={150} draggable={false} />
+            )}
+          </div>
           {signup && <h2 className="auth-title">스캠이와 함께 시작해요</h2>}
           <p className="muted small" style={{ margin: signup ? "4px 0 18px" : "0 0 18px" }}>
             {signup ? "이메일과 비밀번호로 계정을 만들어요." : "가입한 이메일과 비밀번호를 입력해 주세요."}
