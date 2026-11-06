@@ -59,7 +59,7 @@ export default function Page() {
       {route.name === "home" && <HomeScreen store={store} go={go} />}
       {route.name === "incidents" && <IncidentsScreen store={store} go={go} />}
       {route.name === "incident" && <IncidentDetailScreen key={route.id} id={route.id} store={store} go={go} back={back} />}
-      {route.name === "analysis" && <AnalysisScreen key={route.incidentId} incidentId={route.incidentId} store={store} go={go} back={back} />}
+      {route.name === "analysis" && <AnalysisScreen key={route.incidentId} incidentId={route.incidentId} autorun={route.autorun} store={store} go={go} back={back} />}
       {route.name === "evidence" && <EvidenceDetailScreen key={route.id} id={route.id} store={store} go={go} back={back} />}
       {route.name === "evidence-new" && (
         <EvidenceFormScreen key={"new" + (route.incidentId ?? "")} presetIncidentId={route.incidentId} store={store} go={go} back={back} />

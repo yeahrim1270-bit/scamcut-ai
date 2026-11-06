@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { stepData, type ActionGuardData, type Level, type MultiScanData } from "@/lib/analysis";
 import { isActiveJob, type AnalysisStep, type AnalyzerInfo, type AnalyzerKey } from "@/lib/models";
 import { href } from "@/lib/route";
@@ -37,16 +37,43 @@ function badge(step: AnalysisStep | undefined, cap: AnalyzerInfo | undefined): {
 // 서버(AI 모델·규칙)가 돌려준 결과가 있을 때만 영역에 내용을 표시하며, 앱에서 결과를 만들어 내지 않습니다.
 export default function AnalysisScreen({
   incidentId,
+  autorun = false,
   store,
   go,
   back,
 }: {
   incidentId: string;
+  autorun?: boolean; // 타임라인의 'AI 분석하기'로 들어오면 true: 열리자마자 분석을 시작
   store: Store;
   go: (to: string) => void;
   back: (fallback: string) => void;
 }) {
-  const [requesting, setRequesting] = useState(false);
+  // autorun 이면 처음부터 '분석 중' 화면으로 시작해 일반 화면이 잠깐 비치지 않게 합니다.
+  const [requesting, setRequesting] = useState(autorun);
+
+  const runAnalysis = useCallback(async () => {
+    setRequesting(true);
+    const t0 = Date.now();
+    await store.requestAnalysis(incidentId);
+    // 분석이 순식간에 끝나도 '분석 중' 화면이 깜빡이듯 사라지지 않도록 최소 2.8초 유지(진행 표시는 실제 단계 상태)
+    const rest = 2800 - (Date.now() - t0);
+    if (rest > 0) await new Promise((r) => setTimeout(r, rest));
+    setRequesting(false);
+  }, [store, incidentId]);
+
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!autorun || autoStarted.current) return;
+    autoStarted.current = true;
+    window.history.replaceState(null, "", href.analysis(incidentId)); // 새로고침해도 다시 분석하지 않도록 ?run=1 제거
+    const hasItems = store.db.evidence.some((e) => e.incidentId === incidentId);
+    const busy = store.db.jobs.some((j) => j.incidentId === incidentId && isActiveJob(j));
+    if (!hasItems || busy) {
+      setRequesting(false); // 분석할 자료가 없거나 이미 진행 중이면 새로 시작하지 않음
+      return;
+    }
+    void runAnalysis();
+  }, [autorun, incidentId, store, runAnalysis]);
   const incident = store.db.incidents.find((i) => i.id === incidentId);
   if (!incident) {
     return (
@@ -77,15 +104,7 @@ export default function AnalysisScreen({
   const warnLevel: Level = guard?.level ?? scan?.overall.level ?? "low";
   const warnHeadline = guard?.headline ?? "송금·인증번호·링크·앱 설치 요청이 있었는지 확인하고, 직접 찾은 공식 번호로 먼저 확인하세요.";
 
-  const request = async () => {
-    setRequesting(true);
-    const t0 = Date.now();
-    await store.requestAnalysis(incidentId);
-    // 분석이 순식간에 끝나도 '분석 중' 화면이 깜빡이듯 사라지지 않도록 최소 2.8초 유지(진행 표시는 실제 단계 상태)
-    const rest = 2800 - (Date.now() - t0);
-    if (rest > 0) await new Promise((r) => setTimeout(r, rest));
-    setRequesting(false);
-  };
+  const request = runAnalysis;
 
   // 분석 요청 직후~분석 진행 중에는 'AI 분석 중' 화면을 보여 줍니다.
   if (requesting || active) {

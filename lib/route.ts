@@ -7,7 +7,7 @@ export type Route =
   | { name: "home" }
   | { name: "incidents" }
   | { name: "incident"; id: string }
-  | { name: "analysis"; incidentId: string }
+  | { name: "analysis"; incidentId: string; autorun: boolean }
   | { name: "evidence-new"; incidentId: string | null }
   | { name: "evidence-edit"; id: string }
   | { name: "evidence"; id: string }
@@ -19,7 +19,7 @@ export function parse(hash: string): Route {
   const seg = path.split("/").filter(Boolean);
   const q = new URLSearchParams(query);
   if (seg[0] === "incidents") return { name: "incidents" };
-  if (seg[0] === "incident" && seg[1] && seg[2] === "analysis") return { name: "analysis", incidentId: decodeURIComponent(seg[1]) };
+  if (seg[0] === "incident" && seg[1] && seg[2] === "analysis") return { name: "analysis", incidentId: decodeURIComponent(seg[1]), autorun: q.get("run") === "1" };
   if (seg[0] === "incident" && seg[1]) return { name: "incident", id: decodeURIComponent(seg[1]) };
   if (seg[0] === "evidence" && seg[1] === "new") return { name: "evidence-new", incidentId: q.get("incident") };
   if (seg[0] === "evidence" && seg[1] && seg[2] === "edit") return { name: "evidence-edit", id: decodeURIComponent(seg[1]) };
@@ -33,7 +33,8 @@ export const href = {
   home: "#/",
   incidents: "#/incidents",
   incident: (id: string) => `#/incident/${encodeURIComponent(id)}`,
-  analysis: (incidentId: string) => `#/incident/${encodeURIComponent(incidentId)}/analysis`,
+  // run=true 이면 화면이 열리자마자 분석을 시작합니다(타임라인의 'AI 분석하기')
+  analysis: (incidentId: string, run = false) => `#/incident/${encodeURIComponent(incidentId)}/analysis${run ? "?run=1" : ""}`,
   evidence: (id: string) => `#/evidence/${encodeURIComponent(id)}`,
   evidenceNew: (incidentId?: string | null) => `#/evidence/new${incidentId ? `?incident=${encodeURIComponent(incidentId)}` : ""}`,
   evidenceEdit: (id: string) => `#/evidence/${encodeURIComponent(id)}/edit`,

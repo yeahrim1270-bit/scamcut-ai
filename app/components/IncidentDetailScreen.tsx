@@ -114,7 +114,7 @@ export default function IncidentDetailScreen({
       </main>
 
       <div className="bottom-cta">
-        <a className="btn primary block lg" href={href.analysis(id)}>
+        <a className="btn primary block lg" href={href.analysis(id, true)}>
           <Icon name="shield-check" size={20} /> AI 분석하기
         </a>
       </div>
