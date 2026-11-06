@@ -1,0 +1,9 @@
+backend
+legacy
+scripts
+.next
+node_modules
+.env
+.env.local
+.env*.local
+*.png
