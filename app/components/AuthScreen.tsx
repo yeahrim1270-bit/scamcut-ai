@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { href } from "@/lib/route";
 import type { Store } from "@/lib/store";
 import { TabBar, TopBar } from "./common";
-import { ScaniAvatar } from "./Scani";
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -62,13 +61,16 @@ export default function AuthScreen({ mode, store, go, back }: { mode: "login" | 
       <main className="page">
         <div className="auth-head">
           <div className="auth-hero">
-            {signup ? (
-              <ScaniAvatar size={150} alt="스캠이 캐릭터" />
-            ) : (
-              // 로그인 화면 전용 캐릭터(반갑게 인사하는 스캠이)
-              // eslint-disable-next-line @next/next/no-img-element
-              <img className="auth-mascot" src="/images/scani-welcome.png" alt="스캠이 캐릭터" width={150} height={150} draggable={false} />
-            )}
+            {/* 화면별 전용 캐릭터: 로그인 = 인사하는 스캠이, 회원가입 = 손 흔드는 스캠이 */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="auth-mascot"
+              src={signup ? "/images/scani-signup.png" : "/images/scani-welcome.png"}
+              alt="스캠이 캐릭터"
+              width={150}
+              height={150}
+              draggable={false}
+            />
           </div>
           {signup && <h2 className="auth-title">스캠이와 함께 시작해요</h2>}
           <p className="muted small" style={{ margin: signup ? "4px 0 18px" : "0 0 18px" }}>
