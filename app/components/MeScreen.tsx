@@ -2,14 +2,16 @@
 
 import { useRef, useState } from "react";
 import { downloadLocalCopy, listLocalBackups } from "@/lib/backup";
+import { href } from "@/lib/route";
 import type { Store } from "@/lib/store";
 import { ConfirmSheet, Notice, TabBar, TopBar } from "./common";
 import { Icon } from "./icons";
 
 // 내 정보: 서버 저장소 상태, 백업·복원, 데이터 관리
-export default function MeScreen({ store }: { store: Store }) {
+export default function MeScreen({ store, go }: { store: Store; go: (to: string) => void }) {
   const { db, health } = store;
   const [wiping, setWiping] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [busy, setBusy] = useState<"export" | "restore" | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const empty = !db.incidents.length && !db.evidence.length && !db.jobs.length;
@@ -53,13 +55,44 @@ export default function MeScreen({ store }: { store: Store }) {
     <>
       <TopBar title="내 정보" />
       <main className="page">
-        <div className="inc-head">
-          <span className="tile"><Icon name="user" size={24} /></span>
-          <div className="grow">
-            <div className="inc-title">이 기기 사용자</div>
-            <div className="inc-sub">로그인 없이 사용합니다.</div>
+        {store.user ? (
+          <>
+            <div className="inc-head">
+              <span className="tile"><Icon name="user" size={24} /></span>
+              <div className="grow">
+                <div className="inc-title">{store.user.name}님</div>
+                <div className="inc-sub">{store.user.email}</div>
+              </div>
+              <button
+                className="btn sm"
+                disabled={leaving}
+                onClick={async () => {
+                  setLeaving(true);
+                  const ok = await store.logout();
+                  setLeaving(false);
+                  store.notify(ok ? "info" : "error", ok ? "로그아웃되었어요." : "로그아웃하지 못했어요. 다시 시도해 주세요.");
+                }}
+              >
+                {leaving ? "…" : "로그아웃"}
+              </button>
+            </div>
+            <p className="hint" style={{ margin: "8px 4px 0" }}>시연용이라 사건·자료는 계정별로 나뉘지 않고 모두 같은 공간을 써요.</p>
+          </>
+        ) : (
+          <div className="card">
+            <div className="row" style={{ gap: 12, marginBottom: 12 }}>
+              <span className="tile"><Icon name="user" size={24} /></span>
+              <div className="grow">
+                <div className="inc-title">로그인하지 않았어요</div>
+                <div className="inc-sub">로그인하지 않아도 모든 기능을 쓸 수 있어요.</div>
+              </div>
+            </div>
+            <div className="row" style={{ gap: 8 }}>
+              <button className="btn primary grow" onClick={() => go(href.login)}>로그인</button>
+              <button className="btn grow" onClick={() => go(href.signup)}>회원가입</button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="section"><h3>저장된 데이터</h3></div>
         <div className="card list-card">

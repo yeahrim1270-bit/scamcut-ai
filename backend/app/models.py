@@ -84,3 +84,27 @@ class AnalysisJob(Base):
     finished_at: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
 
     incident: Mapped[Incident] = relationship(back_populates="analysis_jobs")
+
+
+class User(Base):
+    """회원. 비밀번호는 해시(scrypt)로만 저장합니다."""
+
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    email: Mapped[str] = mapped_column(String(254), nullable=False, unique=True, index=True)  # 소문자로 정규화해 저장
+    name: Mapped[str] = mapped_column(String(40), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[str] = mapped_column(String(32), nullable=False, default=now_iso)
+
+
+class AuthSession(Base):
+    """로그인 세션. 토큰 원문은 저장하지 않고 SHA-256 해시만 저장합니다."""
+
+    __tablename__ = "auth_sessions"
+    __table_args__ = (Index("ix_auth_sessions_user_id", "user_id"),)
+
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at: Mapped[str] = mapped_column(String(32), nullable=False, default=now_iso)
+    expires_at: Mapped[str] = mapped_column(String(32), nullable=False)

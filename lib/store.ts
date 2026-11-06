@@ -7,7 +7,7 @@
 //  - 서버에 연결할 수 없으면 연결 오류 화면으로 전환합니다.
 //  - 이 기기(localStorage)에 있던 이전 자료는 시작할 때 서버로 옮기고, 원본은 백업으로 보관합니다.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { api, ApiError, type Health, type ImportResult } from "./api";
+import { api, ApiError, type Health, type ImportResult, type User } from "./api";
 import { clearLegacyOriginals, clearLocalBackups, downloadFile, readLegacy, saveLocalBackup, stamp } from "./backup";
 import {
   isActiveJob,
@@ -43,6 +43,10 @@ interface Core {
 }
 const EMPTY_CORE: Core = { incidents: [], evidence: [], jobs: [] };
 
+export type AuthResult = { ok: true } | { ok: false; error: string; fields: { field: string; message: string }[] };
+const authFail = (e: unknown): AuthResult =>
+  e instanceof ApiError ? { ok: false, error: e.message, fields: e.fields } : { ok: false, error: "알 수 없는 오류가 발생했습니다.", fields: [] };
+
 const msgOf = (e: unknown) => (e instanceof ApiError ? e.message : "알 수 없는 오류가 발생했습니다.");
 const upsertJob = (jobs: AnalysisJob[], job: AnalysisJob) =>
   [job, ...jobs.filter((j) => j.id !== job.id)].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -55,6 +59,7 @@ export function useStore() {
   const [pending, setPending] = useState(0); // 저장 중인 요청 수
   const [health, setHealth] = useState<Health | null>(null);
   const [capabilities, setCapabilities] = useState<AnalyzerInfo[]>([]);
+  const [user, setUser] = useState<User | null>(null); // 로그인한 회원(없으면 null)
 
   const chain = useRef<Promise<unknown>>(Promise.resolve());
   const inflight = useRef(0);
@@ -98,11 +103,12 @@ export function useStore() {
 
   // ---------------------------------------------------------- 서버 상태 불러오기
   const loadState = useCallback(async () => {
-    const [s, h, caps] = await Promise.all([api.state(), api.health().catch(() => null), api.capabilities().catch(() => [])]);
+    const [s, h, caps, me] = await Promise.all([api.state(), api.health().catch(() => null), api.capabilities().catch(() => []), api.me().catch(() => null)]);
     if (!alive.current) return;
     setCore({ incidents: s.incidents, evidence: s.evidence, jobs: s.jobs });
     setHealth(h);
     setCapabilities(caps);
+    setUser(me);
     s.jobs.filter(isActiveJob).forEach((j) => track(j.id));
   }, [track]);
 
@@ -250,6 +256,33 @@ export function useStore() {
         });
       },
 
+      // ---- 계정: 저장 큐와 별개로 즉시 처리하고, 실패 이유(서버 메시지)를 그대로 돌려줍니다.
+      async signup(email: string, name: string, password: string): Promise<AuthResult> {
+        try {
+          setUser(await api.signup({ email, name, password }));
+          return { ok: true };
+        } catch (e) {
+          return authFail(e);
+        }
+      },
+      async login(email: string, password: string): Promise<AuthResult> {
+        try {
+          setUser(await api.login({ email, password }));
+          return { ok: true };
+        } catch (e) {
+          return authFail(e);
+        }
+      },
+      async logout(): Promise<boolean> {
+        try {
+          await api.logout();
+          setUser(null);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+
       async refresh() {
         await enqueue(loadState);
       },
@@ -293,11 +326,12 @@ export function useStore() {
       saving: pending > 0,
       health,
       capabilities,
+      user,
       dismissNotice,
       notify: say,
       ...api_,
     };
-  }, [core, status, fatal, notice, pending, health, capabilities, dismissNotice, say, api_]);
+  }, [core, status, fatal, notice, pending, health, capabilities, user, dismissNotice, say, api_]);
 }
 
 export type Store = ReturnType<typeof useStore>;

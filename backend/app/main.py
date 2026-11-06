@@ -15,7 +15,7 @@ from .analyzers import REGISTRY
 from .config import APP_VERSION, CORS_ORIGINS, IS_SQLITE
 from .db import SessionLocal, init_db
 from .errors import ApiError
-from .routers import analysis, data, evidence, incidents
+from .routers import analysis, auth, data, evidence, incidents
 from .services.analysis_runner import fail_stale_jobs
 
 log = logging.getLogger("scamcut")
@@ -56,7 +56,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (incidents.router, evidence.router, analysis.router, data.router):
+for r in (incidents.router, evidence.router, analysis.router, data.router, auth.router):
     app.include_router(r)
 
 
@@ -74,6 +74,9 @@ _FIELD_LABEL = {
     "channel": "자료 유형",
     "incident_id": "사건",
     "id": "ID",
+    "email": "이메일",
+    "name": "이름",
+    "password": "비밀번호",
 }
 
 

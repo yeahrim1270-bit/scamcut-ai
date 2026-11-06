@@ -85,6 +85,15 @@ const evBody = (b: EvidencePayload) => ({
   incident_id: b.incidentId, channel: b.channel, sender: b.sender, occurred_at: b.occurredAt, content: b.content,
 });
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
+interface RawUser { id: string; email: string; name: string; created_at: string }
+const mapUser = (u: RawUser): User => ({ id: u.id, email: u.email, name: u.name, createdAt: u.created_at });
+
 export interface Health {
   status: string; version: string; database: string; analyzers_implemented: number; analyzers_total: number;
 }
@@ -96,6 +105,12 @@ export interface ImportResult {
 const enc = encodeURIComponent;
 
 export const api = {
+  // 계정 (로그인 상태는 서버가 httpOnly 쿠키로 유지)
+  me: () => request<{ user: RawUser | null }>("GET", "/api/auth/me").then((r) => (r.user ? mapUser(r.user) : null)),
+  signup: (b: { email: string; name: string; password: string }) => request<RawUser>("POST", "/api/auth/signup", b).then(mapUser),
+  login: (b: { email: string; password: string }) => request<RawUser>("POST", "/api/auth/login", b).then(mapUser),
+  logout: () => request<unknown>("POST", "/api/auth/logout", {}),
+
   health: () => request<Health>("GET", "/api/health"),
   capabilities: () => request<AnalyzerInfo[]>("GET", "/api/analysis/capabilities"),
   async state() {

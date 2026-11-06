@@ -12,7 +12,9 @@ export type Route =
   | { name: "evidence-edit"; id: string }
   | { name: "evidence"; id: string }
   | { name: "history" }
-  | { name: "me" };
+  | { name: "me" }
+  | { name: "login" }
+  | { name: "signup" };
 
 export function parse(hash: string): Route {
   const [path, query = ""] = hash.replace(/^#/, "").split("?");
@@ -26,6 +28,8 @@ export function parse(hash: string): Route {
   if (seg[0] === "evidence" && seg[1]) return { name: "evidence", id: decodeURIComponent(seg[1]) };
   if (seg[0] === "history") return { name: "history" };
   if (seg[0] === "me") return { name: "me" };
+  if (seg[0] === "login") return { name: "login" };
+  if (seg[0] === "signup") return { name: "signup" };
   return { name: "home" };
 }
 
@@ -40,6 +44,8 @@ export const href = {
   evidenceEdit: (id: string) => `#/evidence/${encodeURIComponent(id)}/edit`,
   history: "#/history",
   me: "#/me",
+  login: "#/login",
+  signup: "#/signup",
 };
 
 export function useRoute() {

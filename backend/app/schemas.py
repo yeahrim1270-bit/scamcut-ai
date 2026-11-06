@@ -224,3 +224,53 @@ class ImportResult(BaseModel):
     evidence_skipped: int
     evidence_unlinked: int  # 연결된 사건을 찾지 못해 '미분류'로 가져온 자료 수
     errors: list[str]
+
+
+# ---------------------------------------------------------------- 계정
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+def _clean_email(v: str) -> str:
+    v = v.strip().lower()
+    if len(v) > 254 or not _EMAIL_RE.match(v):
+        raise ValueError("이메일 형식이 올바르지 않습니다.")
+    return v
+
+
+class SignupIn(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    email: str
+    name: str = Field(min_length=1, max_length=20)
+    password: str = Field(min_length=8, max_length=100)
+
+    @field_validator("email")
+    @classmethod
+    def _email(cls, v: str) -> str:
+        return _clean_email(v)
+
+    @field_validator("password")
+    @classmethod
+    def _password(cls, v: str) -> str:
+        if not re.search(r"[A-Za-z]", v) or not re.search(r"\d", v):
+            raise ValueError("비밀번호는 영문과 숫자를 모두 포함해야 합니다.")
+        return v
+
+
+class LoginIn(BaseModel):
+    email: str
+    password: str = Field(min_length=1, max_length=100)
+
+    @field_validator("email")
+    @classmethod
+    def _email(cls, v: str) -> str:
+        return _clean_email(v)
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    email: str
+    name: str
+    created_at: str

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRoute } from "@/lib/route";
 import { useStore } from "@/lib/store";
 import AnalysisScreen from "./components/AnalysisScreen";
+import AuthScreen from "./components/AuthScreen";
 import ConnectionError from "./components/ConnectionError";
 import EvidenceDetailScreen from "./components/EvidenceDetailScreen";
 import EvidenceFormScreen from "./components/EvidenceFormScreen";
@@ -66,7 +67,8 @@ export default function Page() {
       )}
       {route.name === "evidence-edit" && <EvidenceFormScreen key={route.id} editId={route.id} store={store} go={go} back={back} />}
       {route.name === "history" && <HistoryScreen store={store} />}
-      {route.name === "me" && <MeScreen store={store} />}
+      {route.name === "me" && <MeScreen store={store} go={go} />}
+      {(route.name === "login" || route.name === "signup") && <AuthScreen mode={route.name} store={store} go={go} back={back} />}
       <SyncToast store={store} />
     </div>
   );
