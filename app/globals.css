@@ -354,3 +354,10 @@ textarea { min-height: 150px; resize: vertical; }
 .a-step.s-failed .a-ic { color: var(--danger); }
 @keyframes a-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { .analyzing-mascot { animation: none; } .a-bar i { transition: none; } }
+
+/* ---------- 분석 결과: 스캔이(경고/안심) ---------- */
+.result-hero { display: flex; flex-direction: column; align-items: center; margin-top: 12px; }
+.result-mascot { width: min(240px, 68%); height: auto; user-select: none; -webkit-user-drag: none; animation: a-float 2.8s ease-in-out infinite; }
+.result-hero .warn-banner { width: 100%; margin-top: 6px; }
+.warn-banner.low { background: #f0faf5; border-color: #62c79a; color: #0f6b4f; }
+@media (prefers-reduced-motion: reduce) { .result-mascot { animation: none; } }

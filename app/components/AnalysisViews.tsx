@@ -236,3 +236,34 @@ export function ActionGuardView({ data }: { data: ActionGuardData }) {
     </div>
   );
 }
+
+/* ---------- 분석 결과 요약: 위험 징후 여부에 따라 스캔이가 달라집니다 ---------- */
+
+// 위험·주의 → 경고하는 스캔이 / 위험 징후 없음 → 안심하는 스캔이
+export function ResultHero({ level, headline }: { level: Level; headline: string }) {
+  const risky = level !== "low";
+  return (
+    <div className="result-hero">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className="result-mascot"
+        src={risky ? "/images/scani-warning.png" : "/images/scani-safe.png"}
+        alt={risky ? "위험 징후를 알리는 스캔이" : "위험 징후가 없다고 알리는 스캔이"}
+        width={240}
+        height={240}
+        draggable={false}
+      />
+      {risky ? (
+        <WarningBanner level={level} headline={headline} />
+      ) : (
+        <div className="warn-banner low" role="status">
+          <Icon name="check-circle" size={22} />
+          <div>
+            <b>위험 징후가 발견되지 않았어요</b>
+            <p>분석한 자료에서 위험 징후가 확인되지 않았어요. 그래도 낯선 요청은 직접 찾은 공식 경로로 한 번 더 확인하세요.</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

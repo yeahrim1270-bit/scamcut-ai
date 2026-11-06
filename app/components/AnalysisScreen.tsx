@@ -7,7 +7,7 @@ import { href } from "@/lib/route";
 import type { Store } from "@/lib/store";
 import AiFlowPanel from "./AiFlowPanel";
 import AnalyzingView from "./AnalyzingView";
-import { ActionGuardView, MultiScanView, WarningBanner } from "./AnalysisViews";
+import { ActionGuardView, MultiScanView, ResultHero } from "./AnalysisViews";
 import { Empty, IncidentCard, Notice, TabBar, TopBar, fmtDate, fmtDateTime } from "./common";
 import { Icon, type IconName } from "./icons";
 
@@ -169,7 +169,7 @@ export default function AnalysisScreen({
         )}
 
         {/* 위험 징후 경고 (앱 화면) — 스캔이 캐릭터도 같은 결과에 따라 문구가 바뀝니다 */}
-        {latestJob?.status === "succeeded" && <WarningBanner level={warnLevel} headline={warnHeadline} />}
+        {latestJob?.status === "succeeded" && (scan || guard) && <ResultHero level={warnLevel} headline={warnHeadline} />}
 
         {items.length > 0 && (
           <button className="btn primary block lg" style={{ marginTop: 12 }} onClick={request} disabled={requesting || active || notReady.length > 0}>
