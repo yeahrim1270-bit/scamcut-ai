@@ -16,13 +16,13 @@ import MeScreen from "./components/MeScreen";
 import SplashScreen from "./components/SplashScreen";
 import SyncToast from "./components/SyncToast";
 
-const SPLASH_MS = 5500; // 시작 화면 최소 노출 시간 (5초 이상)
+const SPLASH_MS = 2000; // 시작 화면 노출 시간 (2초)
 
 export default function Page() {
   const { route, go, back } = useRoute();
   const store = useStore();
 
-  // 앱 실행 화면: 탭(세션)에서 처음 열 때 5.5초간 보여 주고, 그동안 서버에서 데이터를 불러옵니다.
+  // 앱 실행 화면: 탭(세션)에서 처음 열 때 2초간 보여 주고, 그동안 서버에서 데이터를 불러옵니다.
   // null = 아직 판단 전(깜빡임 방지), true = 표시 중, false = 건너뜀/종료
   const [splash, setSplash] = useState<boolean | null>(null);
   useEffect(() => {
