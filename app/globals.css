@@ -329,3 +329,8 @@ textarea { min-height: 150px; resize: vertical; }
 .launch-name { margin: 0; padding-left: .26em; /* 글자 간격 때문에 생기는 오른쪽 쏠림 보정 */ font-size: clamp(24px, 8.2vw, 34px); font-weight: 800; letter-spacing: .26em; color: #1d1d1f; white-space: nowrap; }
 @keyframes launch-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .launch { animation: none; } }
+
+/* ---------- OpenAI 사건 해석 ---------- */
+.src-ext { background: #efeafd; color: #5a3fc0; }
+.ai-card { border-color: #d9cffa; }
+.ai-card .result-body { margin-top: 12px; }

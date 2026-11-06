@@ -5,6 +5,7 @@ import { stepData, type ActionGuardData, type Level, type MultiScanData } from "
 import { isActiveJob, type AnalysisStep, type AnalyzerInfo, type AnalyzerKey } from "@/lib/models";
 import { href } from "@/lib/route";
 import type { Store } from "@/lib/store";
+import AiFlowPanel from "./AiFlowPanel";
 import { ActionGuardView, MultiScanView, WarningBanner } from "./AnalysisViews";
 import { Empty, IncidentCard, Notice, TabBar, TopBar, fmtDate, fmtDateTime } from "./common";
 import { Icon, type IconName } from "./icons";
@@ -191,6 +192,8 @@ export default function AnalysisScreen({
             );
           })}
         </div>
+
+        {items.length > 0 && <AiFlowPanel incidentId={incidentId} evidence={items} />}
 
         {notImplemented.length > 0 && (
           <div style={{ marginTop: 14 }}>
