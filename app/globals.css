@@ -404,3 +404,8 @@ details[open] > .acc-sum .acc-chev { transform: rotate(90deg); }
 .auth-error { background: #fdeeee; color: #a02323; border: 1px solid #f2c9c9; border-radius: 12px; padding: 11px 13px; font-size: 13.5px; margin-bottom: 12px; }
 .auth-switch { text-align: center; margin: 16px 0 0; font-size: 14px; color: var(--muted); }
 .auth-switch a { color: var(--primary); font-weight: 800; }
+
+/* 로그인·회원가입 상단: 스캔이 */
+.auth-head { text-align: center; }
+.auth-hero { width: 150px; height: 136px; margin: 2px auto 6px; }
+.auth-head .auth-title { margin: 0; }

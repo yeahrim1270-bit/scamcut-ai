@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { href } from "@/lib/route";
 import type { Store } from "@/lib/store";
 import { TabBar, TopBar } from "./common";
+import { ScaniAvatar } from "./Scani";
 
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -59,10 +60,13 @@ export default function AuthScreen({ mode, store, go, back }: { mode: "login" | 
     <>
       <TopBar title={signup ? "회원가입" : "로그인"} onBack={() => back(href.me)} />
       <main className="page">
-        <h2 className="auth-title">{signup ? "스캔이와 함께 시작해요" : "다시 만나서 반가워요"}</h2>
-        <p className="muted small" style={{ margin: "4px 0 18px" }}>
-          {signup ? "이메일과 비밀번호로 계정을 만들어요." : "가입한 이메일과 비밀번호를 입력해 주세요."}
-        </p>
+        <div className="auth-head">
+          <div className="auth-hero"><ScaniAvatar size={150} alt="스캔이 캐릭터" /></div>
+          {signup && <h2 className="auth-title">스캔이와 함께 시작해요</h2>}
+          <p className="muted small" style={{ margin: signup ? "4px 0 18px" : "0 0 18px" }}>
+            {signup ? "이메일과 비밀번호로 계정을 만들어요." : "가입한 이메일과 비밀번호를 입력해 주세요."}
+          </p>
+        </div>
 
         <form onSubmit={submit} noValidate>
           <div className="field">
