@@ -62,7 +62,7 @@ export default function AuthScreen({ mode, store, go, back }: { mode: "login" | 
       <main className="page">
         <div className="auth-head">
           <div className="auth-hero"><ScaniAvatar size={150} alt="스캔이 캐릭터" /></div>
-          {signup && <h2 className="auth-title">스캔이와 함께 시작해요</h2>}
+          {signup && <h2 className="auth-title">스캠이와 함께 시작해요</h2>}
           <p className="muted small" style={{ margin: signup ? "4px 0 18px" : "0 0 18px" }}>
             {signup ? "이메일과 비밀번호로 계정을 만들어요." : "가입한 이메일과 비밀번호를 입력해 주세요."}
           </p>
